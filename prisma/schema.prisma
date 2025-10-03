@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // yoki mysql/sqlite
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String
+  role     Role
+
+  patients     Patient[]    @relation("DoctorPatients")
+  labRequests  LabRequest[] @relation("DoctorRequests")
+}
+
+model Patient {
+  id       Int      @id @default(autoincrement())
+  name     String
+  phone    String
+
+  doctorId Int
+  doctor   User      @relation("DoctorPatients", fields: [doctorId], references: [id])
+
+  labRequests LabRequest[]
+}
+
+model LabRequest {
+  id        Int      @id @default(autoincrement())
+  status    Status   @default(PENDING)
+  result    String?
+
+  patientId Int
+  patient   Patient   @relation(fields: [patientId], references: [id])
+
+  doctorId  Int
+  doctor    User      @relation("DoctorRequests", fields: [doctorId], references: [id])
+}
+
+enum Role {
+  DOCTOR
+  LAB
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  DONE
+}
