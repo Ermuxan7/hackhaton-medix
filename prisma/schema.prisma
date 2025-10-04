@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // yoki mysql/sqlite
+  provider = "postgresql" 
   url      = env("DATABASE_URL")
 }
 
@@ -20,23 +20,27 @@ model User {
 
 model Patient {
   id       Int      @id @default(autoincrement())
-  name     String
+  fullName     String
   phone    String
-
+  age Int
+  address String
+  medicHistory String
+  content String
   doctorId Int
-  doctor   User      @relation("DoctorPatients", fields: [doctorId], references: [id])
-
+  doctor   User      @relation("DoctorPatients", fields: [doctorId], references: [id])  
   labRequests LabRequest[]
 }
 
 model LabRequest {
   id        Int      @id @default(autoincrement())
   status    Status   @default(PENDING)
-  result    String?
-
+  drugName String
+  dose String
+  receptionFrequency String
+  continuity String
+  addition String?
   patientId Int
   patient   Patient   @relation(fields: [patientId], references: [id])
-
   doctorId  Int
   doctor    User      @relation("DoctorRequests", fields: [doctorId], references: [id])
 }
@@ -45,6 +49,7 @@ enum Role {
   DOCTOR
   LAB
   ADMIN
+  PATIENT
 }
 
 enum Status {

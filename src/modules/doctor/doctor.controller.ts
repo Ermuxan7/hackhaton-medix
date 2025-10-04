@@ -4,10 +4,12 @@ import {
   createPatient,
   createLabRequest,
   getDoctorRequests,
+  getAllPatients,
 } from "./doctor.service";
 
 const router = Router();
 
+// 🟢 Bemor yaratish
 router.post(
   "/patients",
   authMiddleware,
@@ -18,6 +20,18 @@ router.post(
   }
 );
 
+// 🟢 Barcha bemorlarni olish
+router.get(
+  "/patients",
+  authMiddleware,
+  roleGuard(["DOCTOR"]),
+  async (req: AuthRequest, res) => {
+    const patients = await getAllPatients(req.user!.id);
+    res.json(patients);
+  }
+);
+
+// 🟢 Yangi resept yaratish
 router.post(
   "/requests",
   authMiddleware,
@@ -28,6 +42,7 @@ router.post(
   }
 );
 
+// 🟢 Barcha reseptlarni olish
 router.get(
   "/requests",
   authMiddleware,
